@@ -1,6 +1,13 @@
 # go-projects
 Repository for Go projects
 
+## Source
+The basics and examples are taken from the [Go Tour](https://tour.golang.org/list)
+
+The [Go Documentation](https://golang.org/doc/) is also useful
+
+More resources can be found at the end of the tour, [here](https://tour.golang.org/concurrency/11)
+
 ## How to run
 
 You run a Go file like this:
