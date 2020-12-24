@@ -10,6 +10,7 @@ The wc.Test function runs a test suite against the provided function and prints 
 You might find strings.Fields helpful.
 */
 
+// To make it available offline run "go get golang.org/x/tour/gotour"
 import (
 	"strings"
 
