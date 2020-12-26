@@ -14,3 +14,15 @@ You run a Go file like this:
 ```
 go run FILEPATH
 ```
+
+## How to use local packages
+
+Inside the directory, run: 
+```
+go mod init MOD_NAME
+```
+
+Then you have to build the package: 
+```
+go build
+```
