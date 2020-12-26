@@ -1,4 +1,4 @@
-package main
+package crypto
 
 import (
 	"crypto/sha256"
@@ -166,7 +166,7 @@ func Sha256(s []byte) [OTUPUT_SIZE]byte {
 	return d.checkSum256(s)
 }
 
-func main() {
+func Test() {
 	s1, s2, s3 := "abcde", "abc", ""
 	b1 := Sha256([]byte(s1))
 	b2 := Sha256([]byte(s2))
