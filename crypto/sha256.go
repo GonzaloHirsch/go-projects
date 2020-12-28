@@ -29,10 +29,11 @@ var H = [8]uint32{
 	0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19,
 }
 
-const CHUNK_SIZE = 512
-const FILL_LIMIT = 16
-const SCHEDULE_SIZE = 64
-const OTUPUT_SIZE = 32
+const SHA_256_CHUNK_SIZE_BITS = 512
+const SHA_256_CHUNK_SIZE_BYTES = 64
+const SHA_256_FILL_LIMIT = 16
+const SHA_256_SCHEDULE_SIZE = 64
+const SHA_256_OTUPUT_SIZE = 32
 
 // Right rotation function
 func RotR(u uint32, times int) uint32 {
@@ -46,20 +47,19 @@ func ShiftR(u uint32, times int) uint32 {
 
 // Converts a byte array into chunks of the same size
 func chunkerizeSlice(s []byte, chunkSize int) [][]byte {
-	_chunkSize := int(chunkSize / 8)
 	// Calculating number of chunks
-	n := int(len(s) / _chunkSize)
+	n := int(len(s) / chunkSize)
 	// Allocating space for the chunks needed
 	var chunks = make([][]byte, n)
 	// Putting each chunk in place
 	for i := 0; i < n; i++ {
-		chunks[i] = s[(_chunkSize * i):(_chunkSize * (i + 1))]
+		chunks[i] = s[(chunkSize * i):(chunkSize * (i + 1))]
 	}
 	return chunks
 }
 
 // Converts the resulting hash of 32 bit words into a byte array
-func hashToByteArray(hash []uint32) [OTUPUT_SIZE]byte {
+func hashToByteArray(hash []uint32) [SHA_256_OTUPUT_SIZE]byte {
 	// Allocating the space
 	arr := make([]byte, 0, len(hash)*4)
 
@@ -70,7 +70,7 @@ func hashToByteArray(hash []uint32) [OTUPUT_SIZE]byte {
 		arr = append(arr, temp...)
 	}
 
-	var _arr [OTUPUT_SIZE]byte
+	var _arr [SHA_256_OTUPUT_SIZE]byte
 	copy(_arr[:], arr)
 
 	return _arr
@@ -82,7 +82,7 @@ func (dig *digest) reset() {
 }
 
 // Calculates the 256 checksum of the data
-func (dig *digest) checkSum256(_s []byte) [OTUPUT_SIZE]byte {
+func (dig *digest) checkSum256(_s []byte) [SHA_256_OTUPUT_SIZE]byte {
 	// Preprocessing the message
 
 	// Length of the original message
@@ -116,22 +116,22 @@ func (dig *digest) checkSum256(_s []byte) [OTUPUT_SIZE]byte {
 	s = append(s, lbs...)
 
 	// Transforming into chunks
-	chunks := chunkerizeSlice(s, CHUNK_SIZE)
+	chunks := chunkerizeSlice(s, SHA_256_CHUNK_SIZE_BYTES)
 
 	// Rounds
 
 	// Iterate each chunk
 	for _, chunk := range chunks {
 		// Creating the 64 entry 32-bit word array
-		w := make([]uint32, SCHEDULE_SIZE)
+		w := make([]uint32, SHA_256_SCHEDULE_SIZE)
 
 		// Filling the first 16 positions with the chunk
-		for i := 0; i < FILL_LIMIT; i++ {
+		for i := 0; i < SHA_256_FILL_LIMIT; i++ {
 			w[i] = binary.BigEndian.Uint32(chunk[(i * 4):((i + 1) * 4)])
 		}
 
 		// Extending the original words
-		for i := 16; i < SCHEDULE_SIZE; i++ {
+		for i := 16; i < SHA_256_SCHEDULE_SIZE; i++ {
 			s0 := (RotR(w[i-15], 7)) ^ (RotR(w[i-15], 18)) ^ (ShiftR(w[i-15], 3))
 			s1 := (RotR(w[i-2], 17)) ^ (RotR(w[i-2], 19)) ^ (ShiftR(w[i-2], 10))
 			w[i] = w[i-16] + s0 + w[i-7] + s1
@@ -141,7 +141,7 @@ func (dig *digest) checkSum256(_s []byte) [OTUPUT_SIZE]byte {
 		a, b, c, d, e, f, g, h := dig.H[0], dig.H[1], dig.H[2], dig.H[3], dig.H[4], dig.H[5], dig.H[6], dig.H[7]
 
 		// Compression loop
-		for i := 0; i < SCHEDULE_SIZE; i++ {
+		for i := 0; i < SHA_256_SCHEDULE_SIZE; i++ {
 			s1 := (RotR(e, 6)) ^ (RotR(e, 11)) ^ (RotR(e, 25))
 			ch := (e & f) ^ ((^e) & g)
 			temp1 := h + s1 + ch + K[i] + w[i]
@@ -160,13 +160,13 @@ func (dig *digest) checkSum256(_s []byte) [OTUPUT_SIZE]byte {
 }
 
 // Function to calculate the Sha256 of a given byte array message
-func Sha256(s []byte) [OTUPUT_SIZE]byte {
+func Sha256(s []byte) [SHA_256_OTUPUT_SIZE]byte {
 	d := digest{}
 	d.reset()
 	return d.checkSum256(s)
 }
 
-func Test() {
+func TestSha256() {
 	s1, s2, s3 := "abcde", "abc", ""
 	b1 := Sha256([]byte(s1))
 	b2 := Sha256([]byte(s2))
