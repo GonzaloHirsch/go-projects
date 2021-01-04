@@ -72,7 +72,6 @@ func encryptMultiple(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// Get messages to hash
-	fmt.Println(req.PostForm)
 	msgs, ok := req.PostForm[ENCRYPT_MULTIPLE_MESSAGE]
 	if !ok {
 		http.Error(w, "Missing msgs parameter.", http.StatusBadRequest)
