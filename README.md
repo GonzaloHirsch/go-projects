@@ -79,3 +79,39 @@ To **mine the block**:
 ```
 curl -XPOST localhost:8090/mine
 ```
+
+### Url Shortener Server
+To run the server:
+```
+go run http/urlShortenerServer.go &
+```
+
+To **add a URL**:
+```
+curl -XPOST -d "alias=ALIAS&url=URL" localhost:8090/urls
+```
+
+To **delete a URL**:
+```
+curl -XDELETE localhost:8090/urls/delete?alias=ALIAS
+```
+
+To **use an alias to navigate** (works best from browsers):
+```
+curl localhost:8090/goto/ALIAS
+```
+
+To **get alias views**:
+```
+curl localhost:8090/urls/visits/ALIAS
+```
+
+To **get all alias**:
+```
+curl localhost:8090/urls/all
+```
+
+To **get all views**:
+```
+curl localhost:8090/urls/views/all
+```
